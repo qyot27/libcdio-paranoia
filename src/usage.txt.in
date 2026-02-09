@@ -64,6 +64,7 @@ OPTIONS:
   -X --abort-on-skip              : abort on imperfect reads/skips
   -x --test-flags=mask            : simulate CD-reading errors of ilk-mask n
                                     mask & 0x10  - simulate underrun errors
+  -M --all-sectors                : copies all sectors
 
 OUTPUT SMILIES:
   :-)   Normal operation, low/no jitter
