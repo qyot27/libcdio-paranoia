@@ -1183,9 +1183,12 @@ int main(int argc, char *argv[]) {
     long batch_last;
     int batch_track;
 
-    if (all_sectors)
+    if (all_sectors) {
       /* explicitly turn off span, we're grabbing everything */
+      if (span)
+        report("Warning: all-sectors requested, overriding span");
       span = 0;
+    }
 
     if (span) {
       /* look for the hyphen */
