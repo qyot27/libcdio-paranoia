@@ -566,10 +566,11 @@ static void callback(long int inpos, paranoia_cb_mode_t function) {
 #endif /* !TRACE_PARANOIA */
 
 static const char optstring[] =
-    "aBcCd:eEfFg:k:hi:l:L:Am:n:o:O:pqQrRsS:Tt:VvwWx:XYZz::";
+    "aBcCd:eEfFg:k:hi:l:L:AMm:n:o:O:pqQrRsS:Tt:VvwWx:XYZz::";
 
 static const struct option options[] = {
     {"abort-on-skip", no_argument, NULL, 'X'},
+    {"all-sectors", no_argument, NULL, 'M'},
     {"analyze-drive", no_argument, NULL, 'A'},
     {"batch", no_argument, NULL, 'B'},
     {"disable-extra-paranoia", no_argument, NULL, 'Y'},
@@ -692,6 +693,7 @@ int main(int argc, char *argv[]) {
   int output_endian = 0; /* -1=host, 0=little, 1=big */
   int query_only = 0;
   int batch = 0;
+  int all_sectors = 0;
   int run_cache_test = 0;
   long int force_cdrom_overlap = -1;
   long int force_cdrom_sectors = -1;
@@ -862,6 +864,9 @@ int main(int argc, char *argv[]) {
       break;
     case 'E':
       force_overread = 1;
+      break;
+    case 'M':
+      all_sectors = 1;
       break;
     default:
       usage(stderr);
@@ -1178,6 +1183,14 @@ int main(int argc, char *argv[]) {
     long batch_last;
     int batch_track;
 
+    if (all_sectors) {
+      if (span)
+        report("Warning: all-sectors requested, overriding span");
+
+      /* explicitly turn off span, we're grabbing everything */
+      span = 0;
+    }
+
     if (span) {
       /* look for the hyphen */
       char *span2 = strchr(span, '-');
@@ -1223,13 +1236,15 @@ int main(int argc, char *argv[]) {
 
     {
       /* Check for errors on lsn before getting track */
-      if (i_first_lsn < 0) {
-        report("Error on begin of span: %li.  Aborting.\n\n", i_first_lsn);
-        exit(1);
-      }
-      if (i_last_lsn < 0) {
-        report("Error on end of span: %li.  Aborting.\n\n", i_last_lsn);
-        exit(1);
+      if (span) {
+        if (i_first_lsn < 0) {
+          report("Error on begin of span: %li.  Aborting.\n\n", i_first_lsn);
+          exit(1);
+        }
+        if (i_last_lsn < 0) {
+          report("Error on end of span: %li.  Aborting.\n\n", i_last_lsn);
+          exit(1);
+        }
       }
 
       int track1 = cdda_sector_gettrack(d, i_first_lsn);
@@ -1303,7 +1318,12 @@ int main(int argc, char *argv[]) {
 
       while (cursor <= i_last_lsn) {
         char outfile_name[PATH_MAX];
-        if (batch) {
+        if (all_sectors) {
+          batch_track = cdda_disc_firstsector(d);
+          batch_last = cdda_disc_lastsector(d);
+          if (batch_last > i_last_lsn)
+            batch_last = i_last_lsn;
+        } else if (batch) {
           batch_first = cursor;
           batch_track = cdda_sector_gettrack(d, cursor - toc_offset);
           batch_last = cdda_track_lastsector(d, batch_track) + toc_offset;
