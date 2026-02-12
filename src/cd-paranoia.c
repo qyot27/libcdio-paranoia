@@ -1184,9 +1184,10 @@ int main(int argc, char *argv[]) {
     int batch_track;
 
     if (all_sectors) {
-      /* explicitly turn off span, we're grabbing everything */
       if (span)
         report("Warning: all-sectors requested, overriding span");
+
+      /* explicitly turn off span, we're grabbing everything */
       span = 0;
     }
 
