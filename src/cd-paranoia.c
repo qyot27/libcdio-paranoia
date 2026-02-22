@@ -938,7 +938,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (optind >= argc && !query_only) {
-    if (batch)
+    if (batch || all_sectors)
       span = NULL;
     else {
       /* D'oh.  No span. Fetch me a brain, Igor. */
