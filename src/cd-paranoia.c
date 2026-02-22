@@ -1189,7 +1189,7 @@ int main(int argc, char *argv[]) {
         report("Warning: all-sectors requested, overriding span");
 
       /* explicitly turn off span, we're grabbing everything */
-      span = 0;
+      span = NULL;
 
       /* check if both a span and --all-sectors were provided */
       if (optind + 1 < argc)
