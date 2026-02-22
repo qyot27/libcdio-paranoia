@@ -1324,6 +1324,7 @@ int main(int argc, char *argv[]) {
       while (cursor <= i_last_lsn) {
         char outfile_name[PATH_MAX];
         if (all_sectors) {
+          batch_first = cursor;
           batch_track = cdda_disc_firstsector(d);
           batch_last = cdda_disc_lastsector(d);
           if (batch_last > i_last_lsn)
