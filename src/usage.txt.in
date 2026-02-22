@@ -133,5 +133,8 @@ A few examples, protected from the shell:
   C) extract from track 1, time 0:30.12 to 1:10.00:
        @CDPARANOIA_NAME@ "[:30.12]-1[1:10]"
 
+  D) extract the entire disc to a single file:
+       @CDPARANOIA_NAME@ -M
+
 Submit bug reports to bug-libcdio@gnu.org
 
