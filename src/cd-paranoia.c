@@ -1183,17 +1183,20 @@ int main(int argc, char *argv[]) {
     long batch_first;
     long batch_last;
     int batch_track;
+    char *span_copy = span;
 
     if (all_sectors) {
-      if (span)
-        report("Warning: all-sectors requested, overriding span");
-
-      /* explicitly turn off span, we're grabbing everything */
+      /* explicitly turn off span, we're grabbing everything,
+       * but save the argument itself for the report */
       span = NULL;
 
       /* check if both a span and --all-sectors were provided */
-      if (optind + 1 < argc)
+      if (optind + 1 < argc) {
+        report(
+            "WARNING: --all-sectors option overrides user-provided span (%s)\n",
+            span_copy);
         span_set = 1;
+      }
     }
 
     if (span) {
